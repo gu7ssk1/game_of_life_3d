@@ -18,7 +18,7 @@ const int width = 50;
 
 // flag to end game if all life have died
 
-int gameover;
+bool gameover;
 
 // count game iterations
 
@@ -52,8 +52,14 @@ int main(void)
     {
         draw();
         logic();
-        sleep(40);
+        sleep(55);
         gamecount++;
+        if (lifecount <= 0 || kbhit())
+        {
+            gameover = true;
+            textcolor(2);
+            printf("YOU DIED\n");
+        }
     }
     return 0;
 }
@@ -89,7 +95,7 @@ void setup()
             
         }
     }
-    int gameover = 0;
+    gameover = false;
 
 }
 
@@ -139,12 +145,28 @@ void draw()
 
 void logic()
 {
-    
+    // initialize neighbor count
     int neighbors = 0;
-    for (int i = 0; i < height; i++)
+    
+    for (int i = 1; i < height; i++)
     {
-        for (int j = 0; j < width; j++)
+        for (int j = 1; j < width; j++)
         {
+            int flag = conwaycheck(i, j, organizem[][]);
+            switch(flag)
+                {
+                    case 0:
+                        organcopy[i][j] = false;
+                        lifecount--;
+                        break;
+                    case 1:
+                        organcopy[i][j] = true;
+                    case 2:
+                        organcopy[i][j] = true;
+                        lifecount++;
+                        
+                }
+            /* in case conway function doesn't work
             if (organizem[i][j] == true)
             {
                 for (int q = -1; q < 2; q++)
@@ -164,15 +186,66 @@ void logic()
                 {
                     organcopy[i][j] = false;
                 }
+                else
+                {
+                    organcopy[i][j] = true;
+                }
             }
+            else
+            {
+                
+            }
+            */
             
         }
         
     }
-    
+    // copy buffer array to real array
+    // and re-initialize buffer array
+    for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j< width; j++)
+                {
+                    organizem[i][j] = organcopy[i][j];
+                    organcopy[i][j] = false;
+                }
+        }
     
 }
-bool conwaycheck(int row, int col)
+// function to check organizem suround
+// according to conway GOL rules
+int conwaycheck(int i, int j, bool array[][])
 {
-
+    int n = 0;
+    int flag = 0;
+    bool organflag = false;
+    
+    if (array[i][j] == true)
+    {
+        organflag = true;
+    }
+    for (int q = -1; q < 2; q++)
+        {
+            for (int p = -1; p < 2; p++)
+                {
+                    if (array[i + q][j + p] == true)
+                    {
+                        n++;
+                    }
+                }
+        }
+    if (n < 2 || n > 3 )
+    {
+        return flag = 0;
+    }
+    else if ((n == 2 || n == 3) && organflag == true)
+    {
+        return flag = 1;
+    }
+    else if (n == 3 && organflag == false)
+    {
+        return flag = 2;
+    }
+    
+    
 }
