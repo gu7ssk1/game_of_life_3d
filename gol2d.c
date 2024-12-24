@@ -52,15 +52,27 @@ int main(void)
     while(gameover == false)
     {
         draw();
-        logic();
-        Sleep(55);
+        Sleep(555);
         gamecount++;
-        if (lifecount <= 0)
+        //printf("this life : %d\n",lifecount);
+        if (lifecount == 0)
         {
             gameover = true;
-            //system("color 40");
+            system("color 40");
             printf("YOU DIED\n");
             system("color 07");
+        }
+        logic();
+
+         // copy buffer array to real array
+    // and re-initialize buffer array
+    for (int i = 0; i < HEIGHT; i++)
+        {
+            for (int j = 0; j< WIDTH; j++)
+                {
+                    organizem[i][j] = organcopy[i][j];
+                    //organcopy[i][j] = false;
+                }
         }
     }
     return 0;
@@ -83,12 +95,12 @@ void setup()
     }
 
     // random setup for living organizems
-    int randomcount = 50;
+    int randomcount = rand() % 100;
 
     for (int i = 0; i < randomcount; i++)
     {
-        int rd_HEIGHT = rand() % 10;
-        int rd_WIDTH = rand() % 10;
+        int rd_HEIGHT = rand() % HEIGHT;
+        int rd_WIDTH = rand() % WIDTH;
         if (organizem[rd_HEIGHT][rd_WIDTH] == false)
         {
             organizem[rd_HEIGHT][rd_WIDTH] = true;
@@ -103,7 +115,7 @@ void setup()
 void draw()
 {
     // clear screen
-    //system("cls");
+    system("cls");
 
     // draw top wall
     for (int i = 0; i < WIDTH + 2; i++)
@@ -112,6 +124,7 @@ void draw()
     }
     // draw side walls and organizem
     printf("\n");
+    //system("color 04");
     for(int i = 0; i < HEIGHT; i++)
     {
         for (int j = 0; j <= WIDTH; j++)
@@ -122,8 +135,8 @@ void draw()
             }
             else if (organizem[i][j] == true)
             {
-                //system("color 04");
                 printf("#");
+
             }
             else
             {
@@ -133,6 +146,7 @@ void draw()
         }
     printf("\n");
     }
+    //system("color 07");
     // draw bottom wall
     for (int i = 0; i < WIDTH + 2; i++)
     {
@@ -149,13 +163,14 @@ void logic()
     // initialize neighbor count
     int neighbors = 0;
     
-    for (int i = 1; i < HEIGHT; i++)
+    for (int i = 0; i < HEIGHT; i++)
     {
-        for (int j = 1; j < WIDTH; j++)
+        for (int j = 0; j < WIDTH; j++)
         {
             bool s = organizem[i][j];
             int flag = conwaycheck(i, j, organizem, s);
             switch(flag)
+            
                 {
                     case 0:
                         organcopy[i][j] = false;
@@ -163,55 +178,20 @@ void logic()
                         break;
                     case 1:
                         organcopy[i][j] = true;
+                        break;
                     case 2:
                         organcopy[i][j] = true;
                         lifecount++;
-                        
+                        break;
+                    case 4:
+                        organcopy[i][j] = false;
+                        break;
                 }
-            /* in case conway function doesn't work
-            if (organizem[i][j] == true)
-            {
-                for (int q = -1; q < 2; q++)
-                {
-                    for (int p = -1; p < 2; p++)
-                    {
-                        if (organizem[i + q][j + p] == true && (q!=0 && p!=0))
-                        {
-                            neighbors++;
-                            
-                        }
-                    
-                    }
-                    
-                }
-                if (neighbors < 2 || neighbors > 3)
-                {
-                    organcopy[i][j] = false;
-                }
-                else
-                {
-                    organcopy[i][j] = true;
-                }
-            }
-            else
-            {
-                
-            }
-            */
-            
+           
         }
         
     }
-    // copy buffer array to real array
-    // and re-initialize buffer array
-    for (int i = 0; i < HEIGHT; i++)
-        {
-            for (int j = 0; j< WIDTH; j++)
-                {
-                    organizem[i][j] = organcopy[i][j];
-                    organcopy[i][j] = false;
-                }
-        }
+   
     
 }
 // function to check organizem suround
@@ -220,12 +200,7 @@ int conwaycheck(int row, int col, bool array[HEIGHT][WIDTH], bool s)
 {
     int n = 0;
     int flag = 0;
-    bool organflag = false;
-    
-    if (s == true)
-    {
-        organflag = true;
-    }
+
     for (int q = -1; q < 2; q++)
         {
             for (int p = -1; p < 2; p++)
@@ -236,18 +211,31 @@ int conwaycheck(int row, int col, bool array[HEIGHT][WIDTH], bool s)
                     }
                 }
         }
-    if (n < 2 || n > 3 )
+    if (s == true)  
     {
-        return flag = 0;
+        if(n < 2 || n > 3)
+        {
+            return flag = 0;
+            n = 0;
+        }
+        else
+        {
+            return flag = 1;
+            n = 0;
+        }
     }
-    else if ((n == 2 || n == 3) && organflag == true)
+    else
     {
-        return flag = 1;
+        if (n == 3)
+        {
+            return flag = 2;
+            n = 0;
+        }
+        else
+        {
+            return flag = 4;
+        }
     }
-    else if (n == 3 && organflag == false)
-    {
-        return flag = 2;
-    }
-    
-    
+
+
 }
