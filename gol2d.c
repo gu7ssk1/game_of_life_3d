@@ -52,7 +52,7 @@ int main(void)
     while(gameover == false)
     {
         draw();
-        Sleep(555);
+        Sleep(100);
         gamecount++;
         //printf("this life : %d\n",lifecount);
         if (lifecount == 0)
@@ -95,7 +95,7 @@ void setup()
     }
 
     // random setup for living organizems
-    int randomcount = rand() % 100;
+    int randomcount = 9;
 
     for (int i = 0; i < randomcount; i++)
     {
@@ -118,16 +118,16 @@ void draw()
     system("cls");
 
     // draw top wall
-    for (int i = 0; i < WIDTH + 2; i++)
+    for (int i = 0; i <= WIDTH; i++)
     {
-        printf("-");
+        printf("_");
     }
     // draw side walls and organizem
     printf("\n");
     //system("color 04");
     for(int i = 0; i < HEIGHT; i++)
     {
-        for (int j = 0; j <= WIDTH; j++)
+        for (int j = 0; j <= WIDTH ; j++)
         {
             if (j == 0 || j == WIDTH)
             {
@@ -136,7 +136,6 @@ void draw()
             else if (organizem[i][j] == true)
             {
                 printf("#");
-
             }
             else
             {
@@ -148,9 +147,9 @@ void draw()
     }
     //system("color 07");
     // draw bottom wall
-    for (int i = 0; i < WIDTH + 2; i++)
+    for (int i = 0; i <= WIDTH; i++)
     {
-        printf("-");
+        printf("_");
     }
     printf("\n");
      // display number of living organizems
@@ -183,7 +182,7 @@ void logic()
                         organcopy[i][j] = true;
                         lifecount++;
                         break;
-                    case 4:
+                    case 3:
                         organcopy[i][j] = false;
                         break;
                 }
@@ -213,7 +212,7 @@ int conwaycheck(int row, int col, bool array[HEIGHT][WIDTH], bool s)
         }
     if (s == true)  
     {
-        if(n < 2 || n > 3)
+        if(n < 3 || n > 4)
         {
             return flag = 0;
             n = 0;
@@ -233,7 +232,8 @@ int conwaycheck(int row, int col, bool array[HEIGHT][WIDTH], bool s)
         }
         else
         {
-            return flag = 4;
+            return flag = 3;
+            n = 0;
         }
     }
 
