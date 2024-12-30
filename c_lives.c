@@ -1,5 +1,6 @@
-// c program to implament a 2d version 
-// of 'game of life'
+// a cs50 final exercise by Guri 'gursski':
+// c program to implament a simple console 
+// version of John Horton Conway's 'game of life'
 
 #include <stdio.h>
 #include <conio.h>
@@ -9,36 +10,45 @@
 #include <stdbool.h>
 
 // -------------------------------------     
-// initialization
+// initialization zone
 // -------------------------------------
-
 
 #define HEIGHT 20
 #define WIDTH 100
 
 // flag to end game if all life have died
-
 bool gameover = false;
 
 // count game iterations
-
 int gamecount = 0;
 
-// bool array to check living organizems
-
+// bool array for living organizems
 bool organizem[HEIGHT][WIDTH];
 bool organcopy[HEIGHT][WIDTH];
 
-// variable to count life in organizems
+// bool organizems for user input
+bool organuser1[4][4] = {
+    {0,1,1,0},
+    {1,1,1,0},
+    {0,0,1,0},
+    {0,1,1,0}
+};
+bool organuser2[4][4] = {
+    {0,1,0,1},
+    {0,1,0,1},
+    {1,0,1,0},
+    {1,1,1,0}
+};
 
+// variable to count living organizems
 int lifecount = 0;
 
 // function declarations
-
 void setup();
 void draw();
 void logic();
 int conwaycheck(int row, int col, bool array[HEIGHT][WIDTH], bool s);
+void printuser(bool array[4][4]);
 
 
 // -------------------------------------
@@ -54,19 +64,23 @@ int main(void)
         draw();
         Sleep(100);
         gamecount++;
-        //printf("this life : %d\n",lifecount);
-        if (lifecount == 0)
+
+        // check if gameover (user press esc)
+        if (lifecount == 0 || gameover == true)
         {
             gameover = true;
             system("color 40");
+            Sleep(1000);
+            gotoxy(HEIGHT/2,WIDTH/2);
             printf("YOU DIED\n");
+            Sleep(1000); 
             system("color 07");
         }
         logic();
 
-         // copy buffer array to real array
-    // and re-initialize buffer array
-    for (int i = 0; i < HEIGHT; i++)
+        // copy buffer array to real array
+        // and re-initialize buffer array
+        for (int i = 0; i < HEIGHT; i++)
         {
             for (int j = 0; j< WIDTH; j++)
                 {
@@ -79,7 +93,7 @@ int main(void)
 }
 
 // -------------------------------------
-// function defenitions
+// different function defenitions
 // -------------------------------------
 
 void setup()
@@ -110,12 +124,68 @@ void setup()
     }
     gameover = false;
 
+    // add organizems by user keystrokes
+    system("cls");
+    printf("add organizems to random location with keys 'A' and 'B' \n");
+    printf("A\n______\n");
+    printuser(organuser1);
+    printf("\n");
+    printf("B\n______\n");
+    printuser(organuser2);
+
+    printf("press any key to continue");
+    getch();
 }
 
 void draw()
 {
     // clear screen
     system("cls");
+
+    // functionality to detect user key stroke
+    // and insert user organizem by key
+    if (kbhit())
+    {
+        int ch = getch();
+        if (ch == 'a' || ch == 'A')
+        {
+            int randomh = rand() % HEIGHT;
+            int randomw = rand() % WIDTH;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (organuser1[i][j] == 1)
+                    {
+                        lifecount++;
+                        organizem[randomh + i][randomw + j] = true;
+                    }
+                }
+            }
+            
+        }
+        else if (ch == 'b' || ch == 'B')
+        {
+            int randomh = rand() % HEIGHT;
+            int randomw = rand() % WIDTH;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (organuser2[i][j] == 1)
+                    {
+                        lifecount++;
+                        organizem[randomh + i][randomw + j] = true;
+                    }
+                }
+            }
+        }
+        // check esc key
+        else if (ch == 27)
+        {
+            gameover = true;
+        }
+    }
 
     // draw top wall
     for (int i = 0; i <= WIDTH; i++)
@@ -124,7 +194,6 @@ void draw()
     }
     // draw side walls and organizem
     printf("\n");
-    //system("color 04");
     for(int i = 0; i < HEIGHT; i++)
     {
         for (int j = 0; j <= WIDTH ; j++)
@@ -140,12 +209,11 @@ void draw()
             else
             {
                 printf(".");
-            }
-            
+            } 
         }
     printf("\n");
     }
-    //system("color 07");
+    
     // draw bottom wall
     for (int i = 0; i <= WIDTH; i++)
     {
@@ -159,9 +227,8 @@ void draw()
 
 void logic()
 {
-    // initialize neighbor count
+    // initialize neighbor count for each organ
     int neighbors = 0;
-    
     for (int i = 0; i < HEIGHT; i++)
     {
         for (int j = 0; j < WIDTH; j++)
@@ -169,7 +236,6 @@ void logic()
             bool s = organizem[i][j];
             int flag = conwaycheck(i, j, organizem, s);
             switch(flag)
-            
                 {
                     case 0:
                         organcopy[i][j] = false;
@@ -185,15 +251,12 @@ void logic()
                     case 3:
                         organcopy[i][j] = false;
                         break;
-                }
-           
-        }
-        
-    }
-   
-    
+                }   
+        }  
+    }   
 }
-// function to check organizem suround
+
+// function to check organizem surounding
 // according to conway GOL rules
 int conwaycheck(int row, int col, bool array[HEIGHT][WIDTH], bool s)
 {
@@ -239,3 +302,23 @@ int conwaycheck(int row, int col, bool array[HEIGHT][WIDTH], bool s)
 
 
 }
+ 
+// function to draw user organ options
+    void printuser(bool array[4][4])
+    {
+        for(int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                if (array[i][j] == 0)
+                {
+                    printf(" ");
+                }
+                else if (array[i][j] == 1)
+                {
+                    printf("#");
+                }
+            }
+            printf("\n");
+        }    
+    }
